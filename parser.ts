@@ -37,9 +37,7 @@ export const parser = (tokens: Token[]): Parser => {
 
   const infixParselets: Record<string, InfixParselet> = {
     opAdd: {
-      getPrecedence() {
-        return Precedence.Add;
-      },
+      precedence: Precedence.Add,
       parse(parser: Parser, left: Expression, token: Token) {
         return {
           type: 'infix',
@@ -50,9 +48,7 @@ export const parser = (tokens: Token[]): Parser => {
       },
     },
     opMul: {
-      getPrecedence() {
-        return Precedence.Mul;
-      },
+      precedence: Precedence.Mul,
       parse(parser: Parser, left: Expression, token: Token) {
         return {
           type: 'infix',
@@ -70,11 +66,8 @@ export const parser = (tokens: Token[]): Parser => {
   function lookAhead(index = 0) {
     return tokens[index];
   }
-
   function getPrecedence() {
-    const parselet = infixParselets[lookAhead()?.type];
-    if (parselet != null) return parselet.getPrecedence();
-    return 0;
+    return infixParselets[lookAhead()?.type]?.precedence ?? 0;
   }
 
   function parse(precedence: Precedence = 0): Expression {
@@ -124,5 +117,5 @@ interface InfixExpression {
 
 interface InfixParselet {
   parse(parser: Parser, left: Expression, token: Token): InfixExpression;
-  getPrecedence(): Precedence;
+  precedence: Precedence;
 }
